@@ -21,6 +21,5 @@ module CheckrWebService
         send("#{key}=", options[key])
       end
     end
-
   end
 end

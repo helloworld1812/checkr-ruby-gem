@@ -1,5 +1,6 @@
 require 'sawyer'
 require 'checkr_web_service/authentication'
+require 'base64'
 
 module CheckrWebService
   # Network layer for API clients.
@@ -83,7 +84,7 @@ module CheckrWebService
       @agent ||= Sawyer::Agent.new(endpoint, sawyer_options) do |http|
         http.headers[:content_type] = 'application/json'
         http.headers[:user_agent] = user_agent
-        http.request :authorization, 'Basic', @access_token
+        http.request :authorization, 'Basic', Base64.encode64(@access_token)
       end
     end
 
