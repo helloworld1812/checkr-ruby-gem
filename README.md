@@ -27,12 +27,11 @@ Or install it yourself as:
 ## Config the gem
 
 ```ruby
-# config/initializers/checkr.rb
+# config/initializers/checkr_web_service.rb
 
 CheckrWebService.configure do |config|
   config.client_id = 'your_client_id'
   config.client_secret = 'your_client_secret' 
-  config.public_key = public_key
 end
 ```
 
@@ -44,6 +43,12 @@ client = CheckrWebService::Client.new(access_token: 'xy7CmAYvkjJU%F4JNpf7H*W1V')
 
 # retrieve the account information
 client.account
+
+# retrieve packages
+client.packages
+
+# retrieve nodes
+client.nodes
 ```
 
 
