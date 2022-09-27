@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'checkr_web_service/response/base_middleware'
-require 'octokit/error'
+require 'checkr_web_service/error'
 
 module CheckrWebService
   # Faraday response middleware

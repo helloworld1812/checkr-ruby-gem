@@ -4,9 +4,6 @@
 require "bundler/setup"
 require "checkr_web_service"
 
-# Disable SSL verification
-OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-
 require 'pry'
 require "irb"
 

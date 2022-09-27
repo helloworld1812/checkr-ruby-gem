@@ -1,3 +1,6 @@
+require 'checkr_web_service/response/raise_error'
+require 'checkr_web_service/version'
+
 module CheckrWebService
   module Configuration
     VALID_OPTIONS_KEYS = [
@@ -10,6 +13,7 @@ module CheckrWebService
       :format,
       :per_page,
       :auto_paginate,
+      :middleware,
       :connection_options,
       :user_agent
     ]
@@ -34,7 +38,9 @@ module CheckrWebService
     # The endpoint that will be used to connect if none is set
     #
     # @note There is no reason to use any other endpoint at this time
-    DEFAULT_ENDPOINT = 'https://api.checkr.com'.freeze
+    # Production Endpoint: https://api.checkr.com/v1/'
+    # Staging Endpoint: https://api.checkr-staging.com/v1/
+    DEFAULT_ENDPOINT = 'https://api.checkr.com/v1/'.freeze
 
     # The response format appended to the path and sent in the 'Accept' header if none is set
     #
@@ -54,6 +60,18 @@ module CheckrWebService
 
     DEFAULT_AUTO_PAGINATE = false
 
+    DEFAULT_MIDDLEWARE =  Faraday::RackBuilder.new do |builder|
+      # In Faraday 2.x, Faraday::Request::Retry was moved to a separate gem
+      # so we use it only when it's available.
+      if defined?(Faraday::Request::Retry)
+        builder.use Faraday::Request::Retry, exceptions: [CheckrWebService::ServerError]
+      elsif defined?(Faraday::Retry::Middleware)
+        builder.use Faraday::Retry::Middleware, exceptions: [CheckrWebService::ServerError]
+      end
+
+      builder.use CheckrWebService::Response::RaiseError
+      builder.adapter Faraday.default_adapter
+    end
 
     attr_accessor *VALID_OPTIONS_KEYS
 
@@ -87,6 +105,7 @@ module CheckrWebService
       self.ssl_verify_mode    = DEFAULT_SSL_VERIFY_MODE
       self.per_page           = DEFAULT_PER_PAGE
       self.auto_paginate      = DEFAULT_AUTO_PAGINATE
+      self.middleware         = DEFAULT_MIDDLEWARE
 
       self
     end

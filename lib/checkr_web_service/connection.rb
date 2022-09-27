@@ -10,8 +10,8 @@ module CheckrWebService
     #
     # @param url [String] The path, relative to {#api_endpoint}
     # @return [Sawyer::Resource]
-    def get(url, options)
-      request :get, url
+    def get(url, options={})
+      request :get, url, options
     end
 
     # Make a HTTP POST request
@@ -81,7 +81,6 @@ module CheckrWebService
 
     def agent
       @agent ||= Sawyer::Agent.new(endpoint, sawyer_options) do |http|
-        http.headers[:accept] = default_media_type
         http.headers[:content_type] = 'application/json'
         http.headers[:user_agent] = user_agent
         http.request :authorization, 'Basic', @access_token
