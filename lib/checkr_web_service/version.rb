@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module CheckrWebService
-  VERSION = "0.2.3"
+  VERSION = "0.1.0"
 end

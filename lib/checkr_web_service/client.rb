@@ -4,6 +4,7 @@ require 'checkr_web_service/configuration'
 require 'checkr_web_service/error'
 require 'checkr_web_service/client/accounts'
 require 'checkr_web_service/client/nodes'
+require 'checkr_web_service/client/candidates'
 
 module CheckrWebService
   class Client
@@ -12,6 +13,7 @@ module CheckrWebService
     include CheckrWebService::Connection
     include CheckrWebService::Client::Accounts
     include CheckrWebService::Client::Nodes
+    include CheckrWebService::Client::Candidates
 
     def initialize(options={})
       options = CheckrWebService.options.merge(options)

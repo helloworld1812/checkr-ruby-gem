@@ -50,8 +50,11 @@ module CheckrWebService
     # By default, don't use a proxy server
     DEFAULT_PROXY = nil
 
-    # By default, the ssl_verify_mode is true
-    DEFAULT_SSL_VERIFY_MODE = true
+    # By default, the ssl_verify_mode is set to 1
+    # 0 is OpenSSL::SSL::VERIFY_NONE
+    # 1 is OpenSSL::SSL::SSL_VERIFY_PEER
+    # the standard default for SSL is SSL_VERIFY_PEER which requires a server certificate check on the client
+    DEFAULT_SSL_VERIFY_MODE = 1
 
     # The user agent that will be sent to the API endpoint if none is set
     DEFAULT_USER_AGENT = "checkr-ruby-gem #{CheckrWebService::VERSION}".freeze
