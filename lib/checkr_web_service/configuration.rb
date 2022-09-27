@@ -8,6 +8,8 @@ module CheckrWebService
       :proxy,
       :ssl_verify_mode,
       :format,
+      :per_page,
+      :auto_paginate,
       :connection_options,
       :user_agent
     ]
@@ -48,6 +50,11 @@ module CheckrWebService
     # The user agent that will be sent to the API endpoint if none is set
     DEFAULT_USER_AGENT = "checkr-ruby-gem #{CheckrWebService::VERSION}".freeze
 
+    DEFAULT_PER_PAGE = 25
+
+    DEFAULT_AUTO_PAGINATE = false
+
+
     attr_accessor *VALID_OPTIONS_KEYS
 
     # Sets all configuration options to their default values
@@ -78,6 +85,8 @@ module CheckrWebService
       self.proxy              = DEFAULT_PROXY
       self.user_agent         = DEFAULT_USER_AGENT
       self.ssl_verify_mode    = DEFAULT_SSL_VERIFY_MODE
+      self.per_page           = DEFAULT_PER_PAGE
+      self.auto_paginate      = DEFAULT_AUTO_PAGINATE
 
       self
     end

@@ -10,7 +10,7 @@ module CheckrWebService
     #
     # @param url [String] The path, relative to {#api_endpoint}
     # @return [Sawyer::Resource]
-    def get(url)
+    def get(url, options)
       request :get, url
     end
 
