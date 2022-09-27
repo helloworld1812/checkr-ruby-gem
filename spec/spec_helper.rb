@@ -1,17 +1,9 @@
 # frozen_string_literal: true
 
-begin
+if RUBY_ENGINE == 'ruby'
   require 'simplecov'
-rescue LoadError
-  # ignore
-else
-  SimpleCov.start do
-    add_group 'Paylcoity Web Service', 'lib/checkr_web_service'
-    add_group 'Faraday Middleware', 'lib/faraday'
-    add_group 'Specs', 'spec'
-  end
+  SimpleCov.start
 end
-
 
 # Set up Rails cache for testing
 require 'rails'

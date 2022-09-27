@@ -2,10 +2,8 @@ require 'checkr_web_service/connection'
 require 'checkr_web_service/authentication'
 require 'checkr_web_service/configuration'
 require 'checkr_web_service/error'
-require 'checkr_web_service/client/companies'
-require 'checkr_web_service/client/employees'
-require 'checkr_web_service/client/credentials'
-require 'checkr_web_service/client/onboardings'
+require 'checkr_web_service/client/account'
+require 'checkr_web_service/client/nodes'
 
 module CheckrWebService
   class Client

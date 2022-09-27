@@ -9,6 +9,8 @@ module CheckrWebService
     # @return [CheckrWebService::Error]
     def self.from_response(response)
       status  = response[:status].to_i
+      body    = response[:body].to_s
+      headers = response[:response_headers]
 
       if klass = case status
       when 400
@@ -81,6 +83,29 @@ module CheckrWebService
     # JSON.pretty_generate(message)
 
   end
+
+      # Status code returned by the GitHub server.
+    #
+    # @return [Integer]
+    def response_status
+      @response[:status]
+    end
+
+    # Headers returned by the GitHub server.
+    #
+    # @return [Hash]
+    def response_headers
+      @response[:response_headers]
+    end
+
+    # Body returned by the GitHub server.
+    #
+    # @return [String]
+    def response_body
+      @response[:body]
+    end
+
+
 end
 
   # Raised on errors in the 400-499 range

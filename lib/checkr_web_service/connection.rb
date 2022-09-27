@@ -62,42 +62,55 @@ module CheckrWebService
 
     private
 
-    def request(method, path, options = {})
-      response = connection.send(method) do |request|
-        case method
-        when :get, :delete
-          request.url(path, options)
-        when :post, :put
-          request.path = path
-          request.body = envelope_encrypt(options)
+    def request(method, path, data, options = {})
+      if data.is_a?(Hash)
+        options[:query]   = data.delete(:query) || {}
+        options[:headers] = data.delete(:headers) || {}
+        if accept = data.delete(:accept)
+          options[:headers][:accept] = accept
         end
       end
 
-      response
+      @last_response = response = agent.call(method, Addressable::URI.parse(path.to_s).normalize.to_s, data, options)
+      response.data
+    rescue CheckrWebService::Error => e
+      @last_response = nil
+      raise e
     end
 
-    def connection
-      options = {
-        headers: {
-          'Accept' => "application/#{format}; charset=utf-8",
-          'User-Agent' => user_agent,
-          'Content-Type' => "application/#{format}"
-        },
-        proxy: proxy,
-        url: endpoint,
-      }.merge(connection_options)
 
-      connection = Faraday::Connection.new(options) do |conn|
-        conn.use Faraday::Request::Authorization, :Bearer, access_token
-        conn.request :retry, max: 2
-        conn.request :json
-        conn.request :instrumentation, name: 'request.checkr'
-
-        # conn.use CheckrWebService::Middleware::Response::RaiseError
-        conn.use FaradayMiddleware::ParseJson, :content_type => /\bjson$/
+    def agent
+      @agent ||= Sawyer::Agent.new(endpoint, sawyer_options) do |http|
+        http.headers[:accept] = default_media_type
+        http.headers[:content_type] = 'application/json'
+        http.headers[:user_agent] = user_agent
+        http.request :authorization, 'Basic', @access_token
       end
+    end
 
-      connection
+    def last_response
+      @last_response if defined? @last_response
+    end
+
+    def sawyer_options
+      opts = {
+        links_parser: Sawyer::LinkParsers::Simple.new
+      }
+      conn_opts = @connection_options
+      conn_opts[:builder] = @middleware.dup if @middleware
+      conn_opts[:proxy] = @proxy if @proxy
+      if conn_opts[:ssl].nil?
+        conn_opts[:ssl] = { verify_mode: @ssl_verify_mode } if @ssl_verify_mode
+      else
+        verify = @connection_options[:ssl][:verify]
+        conn_opts[:ssl] = {
+          verify: verify,
+          verify_mode: verify == false ? 0 : @ssl_verify_mode
+        }
+      end
+      opts[:faraday] = Faraday.new(conn_opts)
+
+      opts
     end
   end
 end

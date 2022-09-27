@@ -3,9 +3,8 @@ module CheckrWebService
     VALID_OPTIONS_KEYS = [
       :client_id,
       :client_secret,
+      :access_token,
       :endpoint,
-      :public_key,
-      :company_id,
       :proxy,
       :ssl_verify_mode,
       :format,
@@ -33,7 +32,7 @@ module CheckrWebService
     # The endpoint that will be used to connect if none is set
     #
     # @note There is no reason to use any other endpoint at this time
-    DEFAULT_ENDPOINT = 'https://apisandbox.paylocity.com'.freeze
+    DEFAULT_ENDPOINT = 'https://api.checkr.com'.freeze
 
     # The response format appended to the path and sent in the 'Accept' header if none is set
     #
