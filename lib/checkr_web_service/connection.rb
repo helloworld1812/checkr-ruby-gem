@@ -7,6 +7,9 @@ module CheckrWebService
   module Connection
     include CheckrWebService::Authentication
 
+    # Header keys that can be passed in options hash to {#get},{#head}
+    CONVENIENCE_HEADERS = Set.new(%i[accept content_type])
+
     # Make a HTTP GET request
     #
     # @param url [String] The path, relative to {#api_endpoint}
@@ -64,6 +67,8 @@ module CheckrWebService
     private
 
     def request(method, path, data, options = {})
+      options = options.dup
+
       if data.is_a?(Hash)
         options[:query]   = data.delete(:query) || {}
         options[:headers] = data.delete(:headers) || {}
@@ -79,6 +84,40 @@ module CheckrWebService
       raise e
     end
 
+    def paginate(url, options = {})
+      page = 1
+      opts = {}
+      opts[:query] = {
+        per_page: @per_page,
+        page: page,
+        order_by: 'created_at',
+        order: 'asc' 
+      }
+
+      data = request(:get, url, opts).data
+
+      if @auto_paginate
+        while !@last_response&.data&.next_href.nil?
+          page += 1
+          next_data = request(:get, url, {
+            query: {
+              per_page: @per_page,
+              page: page,
+              order_by: 'created_at',
+              order: 'asc'
+            }
+          })&.data
+
+          data.concat(next_data) if next_data.is_a?(Array)
+        end
+      end
+
+      data
+    end
+
+    def last_response
+      @last_response if defined? @last_response
+    end
 
     def agent
       @agent ||= Sawyer::Agent.new(endpoint, sawyer_options) do |http|
@@ -86,10 +125,6 @@ module CheckrWebService
         http.headers[:user_agent] = user_agent
         http.request :authorization, 'Basic', Base64.encode64(@access_token)
       end
-    end
-
-    def last_response
-      @last_response if defined? @last_response
     end
 
     def sawyer_options

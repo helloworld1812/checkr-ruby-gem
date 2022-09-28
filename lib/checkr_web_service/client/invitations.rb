@@ -2,7 +2,7 @@ module CheckrWebService
     class Client
       module Invitations
         def invitations(options={})
-          get "invitations", options
+          paginate "invitations", options
         end
       end
     end
