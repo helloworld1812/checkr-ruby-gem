@@ -49,6 +49,9 @@ client.packages
 
 # retrieve nodes
 client.nodes
+
+# retrieve nodes including packages.
+client.nodes(query: {include: 'packages'})
 ```
 
 
