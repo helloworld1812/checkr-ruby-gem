@@ -15,7 +15,7 @@ module CheckrWebService
     # @param url [String] The path, relative to {#api_endpoint}
     # @return [Sawyer::Resource]
     def get(url, options={})
-      request :get, url, options
+      request :get, url, nil, options
     end
 
     # Make a HTTP POST request
@@ -23,8 +23,8 @@ module CheckrWebService
     # @param url [String] The path, relative to {#api_endpoint}
     # @param options [Hash] Body and header params for request
     # @return [Sawyer::Resource]
-    def post(url, options = {})
-      request :post, url, options
+    def post(url, data=nil, options = {})
+      request :post, url, data, options
     end
 
     # Make a HTTP PUT request
@@ -32,8 +32,8 @@ module CheckrWebService
     # @param url [String] The path, relative to {#api_endpoint}
     # @param options [Hash] Body and header params for request
     # @return [Sawyer::Resource]
-    def put(url, options = {})
-      request :put, url, options
+    def put(url, data=nil, options = {})
+      request :put, url, data, options
     end
 
     # Make a HTTP PATCH request
@@ -41,8 +41,8 @@ module CheckrWebService
     # @param url [String] The path, relative to {#api_endpoint}
     # @param options [Hash] Body and header params for request
     # @return [Sawyer::Resource]
-    def patch(url, options = {})
-      request :patch, url, options
+    def patch(url, data=nil, options = {})
+      request :patch, url, data, options
     end
 
     # Make a HTTP DELETE request
@@ -51,7 +51,7 @@ module CheckrWebService
     # @param options [Hash] Query and header params for request
     # @return [Sawyer::Resource]
     def delete(url, options = {})
-      request :delete, url, options
+      request :delete, url, nil, options
     end
 
     # Make a HTTP HEAD request
@@ -60,23 +60,12 @@ module CheckrWebService
     # @param options [Hash] Query and header params for request
     # @return [Sawyer::Resource]
     def head(url, options = {})
-      request :head, url, options
+      request :head, url, nil, options
     end
-
 
     private
 
     def request(method, path, data, options = {})
-      options = options.dup
-
-      if data.is_a?(Hash)
-        options[:query]   = data.delete(:query) || {}
-        options[:headers] = data.delete(:headers) || {}
-        if accept = data.delete(:accept)
-          options[:headers][:accept] = accept
-        end
-      end
-
       @last_response = response = agent.call(method, Addressable::URI.parse(path.to_s).normalize.to_s, data, options)
       response.data
     rescue CheckrWebService::Error => e
@@ -86,28 +75,20 @@ module CheckrWebService
 
     def paginate(url, options = {})
       page = 1
-      opts = {}
-      opts[:query] = {
-        per_page: @per_page,
-        page: page,
-        order_by: 'created_at',
-        order: 'asc' 
-      }
+      opts = options.deep_dup # TODO: Ruby built-in library doesn't have deep_dup method.
+      opts[:query] = {} if opts[:query].nil?
+      opts[:query][:page] = page if opts[:query][:page].nil?
+      opts[:query][:per_page] = @per_page if opts[:query][:per_page].nil?
+      opts[:query][:order_by] = 'created_at' if opts[:query][:per_page].nil?
+      opts[:query][:order] = 'asc' if opts[:query][:order].nil?
 
-      data = request(:get, url, opts).data
+      data = request(:get, url, nil, opts).data
 
       if @auto_paginate
         while !@last_response&.data&.next_href.nil?
           page += 1
-          next_data = request(:get, url, {
-            query: {
-              per_page: @per_page,
-              page: page,
-              order_by: 'created_at',
-              order: 'asc'
-            }
-          })&.data
-
+          opts[:query][:page] = page
+          next_data = request(:get, url, nil, opts)&.data
           data.concat(next_data) if next_data.is_a?(Array)
         end
       end
@@ -123,7 +104,7 @@ module CheckrWebService
       @agent ||= Sawyer::Agent.new(endpoint, sawyer_options) do |http|
         http.headers[:content_type] = 'application/json'
         http.headers[:user_agent] = user_agent
-        http.request :authorization, 'Basic', Base64.encode64(@access_token)
+        http.headers[:Authorization] = "Basic #{Base64.encode64(access_token)}"
       end
     end
 
