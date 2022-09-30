@@ -39,7 +39,7 @@ end
 
 ```ruby
 # Provide authentication credentials
-client = CheckrWebService::Client.new(access_token: 'xy7CmAYvkjJU%F4JNpf7H*W1V')
+client = CheckrWebService::Client.new(access_token: '************')
 
 # retrieve the account information
 client.account
