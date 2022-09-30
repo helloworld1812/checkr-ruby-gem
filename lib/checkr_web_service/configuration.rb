@@ -59,7 +59,7 @@ module CheckrWebService
     # The user agent that will be sent to the API endpoint if none is set
     DEFAULT_USER_AGENT = "checkr-ruby-gem #{CheckrWebService::VERSION}".freeze
 
-    DEFAULT_PER_PAGE = 25
+    DEFAULT_PER_PAGE = 100
 
     DEFAULT_AUTO_PAGINATE = false
 
