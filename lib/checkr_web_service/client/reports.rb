@@ -19,4 +19,3 @@ module CheckrWebService
     end
   end
 end
-  

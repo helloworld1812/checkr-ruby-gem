@@ -13,6 +13,10 @@ module CheckrWebService
         post "geos", data, options
       end
 
+      def update_geo(id, data, options={})
+        put "geos/#{id}", data, options
+      end
+      
       def delete_geo(id, options={})
         delete "geos/#{id}", options
       end

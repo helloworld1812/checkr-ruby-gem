@@ -20,7 +20,6 @@ module CheckrWebService
       def delete_subscription(id, options={})
         delete "subscriptions/#{id}", options
       end
-
     end
   end
 end
