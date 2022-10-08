@@ -79,7 +79,7 @@ module CheckrWebService
       opts[:query] = {} if opts[:query].nil?
       opts[:query][:page] = page if opts[:query][:page].nil?
       opts[:query][:per_page] = @per_page if opts[:query][:per_page].nil?
-      opts[:query][:order_by] = 'created_at' if opts[:query][:per_page].nil?
+      opts[:query][:order_by] = 'created_at' if opts[:query][:order_by].nil?
       opts[:query][:order] = 'asc' if opts[:query][:order].nil?
 
       data = request(:get, url, nil, opts).data
