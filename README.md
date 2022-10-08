@@ -1,4 +1,5 @@
-![image](https://user-images.githubusercontent.com/1224077/192267419-0cb46ddf-22dc-4211-adfe-dddba503340c.png)
+![image](https://user-images.githubusercontent.com/1224077/194689684-2835cd04-153e-4802-93bb-c8a61bb2f5cc.png)
+
 
 # Checkr Ruby Gem
 
