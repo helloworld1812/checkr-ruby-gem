@@ -75,7 +75,7 @@ module CheckrWebService
 
     def paginate(url, options = {})
       page = 1
-      opts = options.deep_dup # TODO: Ruby built-in library doesn't have deep_dup method.
+      opts = options.dup
       opts[:query] = {} if opts[:query].nil?
       opts[:query][:page] = page if opts[:query][:page].nil?
       opts[:query][:per_page] = @per_page if opts[:query][:per_page].nil?
